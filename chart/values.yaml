@@ -1,0 +1,50 @@
+global:
+  domain: a525afb.stage.kyma.ondemand.com
+  imagePullSecret:
+    name: docker-registry
+  image:
+    registry: registry-name
+    tag: latest
+srv:
+  bindings:
+    db:
+      serviceInstanceName: hana
+    auth:
+      serviceInstanceName: xsuaa
+  image:
+    repository: cpapp-srv
+  resources:
+    limits:
+      ephemeral-storage: 1G
+      memory: 500M
+    requests:
+      ephemeral-storage: 1G
+      cpu: 500m
+      memory: 500M
+  health:
+    liveness:
+      path: /health
+    readiness:
+      path: /health
+hana-deployer:
+  image:
+    repository: cpapp-hana-deployer
+  bindings:
+    hana:
+      serviceInstanceName: hana
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1G
+    requests:
+      cpu: 1000m
+      memory: 1G
+hana:
+  serviceOfferingName: hana
+  servicePlanName: hdi-shared
+xsuaa:
+  serviceOfferingName: xsuaa
+  servicePlanName: application
+  parameters:
+    tenant-mode: dedicated
+    xsappname: cpapp-{{ .Release.Namespace }}
